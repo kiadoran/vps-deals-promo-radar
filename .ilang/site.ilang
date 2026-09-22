@@ -1,0 +1,23 @@
+ILANG
+::TYPE{config}::PROJECT{vps-deals}::LANG{zh}
+
+::STATE{@SITE, brand:vps-deals, niche:VPS hosting deals, domain:REPLACE_WITH_YOUR_PROJECT.pages.dev, locale:en-GB, currency:GBP, update_hours:6}
+
+::MODULE{PROVIDERS|title:Edit this table; scraper.py and build.py read it directly.}
+Hostinger UK | https://www.hostinger.com | https://www.hostinger.com/uk/black-friday-vps-deals | 
+Linode by Akamai | https://www.linode.com | https://www.linode.com/lp/free-credit-100/ | 
+Vultr | https://www.vultr.com | https://discover.vultr.com/offers | 
+
+::MODULE{FIELDS|title:Only extract claims present on official source pages.}
+title price currency offer_url valid_until source_url fetched_at provider description
+
+::RULE{price_missing=>omit_price_and_structured_offer_price}
+::RULE{expired_valid_until=>do_not_publish_as_active}
+::RULE{external_links=>official_source_or_declared_affiliate_only}
+::BOUNDARY{never:invent_deals invent_prices invent_commissions bypass_robots scrape_login_content|scope=permanent}
+
+::MODULE{RENDER|title:Static pages and index rules.}
+index:active_deals_sorted_by_fetched_at
+provider:offers_by_provider
+deal:one_page_per_active_offer
+compare:active_offer_item_list

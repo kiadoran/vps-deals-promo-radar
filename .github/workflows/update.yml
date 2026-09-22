@@ -1,0 +1,31 @@
+name: Refresh official offers
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: offer-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scraper.py
+      - run: python build.py
+      - name: Commit verified changes
+        run: |
+          git config user.name 'vps-deals bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add data/offers.json site
+          git diff --cached --quiet || git commit -m 'chore: refresh official offers'
+          git push
